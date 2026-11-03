@@ -1,21 +1,47 @@
-import { Button } from "@/components/ui/button"
+import { useState } from "react"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 
-export function App() {
+import Header from "./components/header"
+
+import Home from "./pages/Home"
+import Products from "./pages/Product"
+import ProductDetail from "./pages/ProductDetail"
+import Cart from "./pages/cart"
+
+import type { Product } from "./data/product"
+
+export default function App() {
+  const [cart, setCart] = useState<Product[]>([])
+
+  function addToCart(product: Product) {
+    setCart([...cart, product])
+
+    alert(`${product.name} ditambahkan ke cart!`)
+  }
+
+  function removeFromCart(id: number) {
+    setCart(cart.filter((product) => product.id !== id))
+  }
+
   return (
-    <div className="flex min-h-svh p-6">
-      <div className="flex max-w-md min-w-0 flex-col gap-4 text-sm leading-loose">
-        <div>
-          <h1 className="font-medium">Project ready!</h1>
-          <p>You may now add components and start building.</p>
-          <p>We&apos;ve already added the button component for you.</p>
-          <Button className="mt-2">Button</Button>
-        </div>
-        <div className="font-mono text-xs text-muted-foreground">
-          (Press <kbd>d</kbd> to toggle dark mode)
-        </div>
-      </div>
-    </div>
+    <BrowserRouter>
+      <Header cartCount={cart.length} />
+
+      <Routes>
+        <Route path="/" element={<Home addToCart={addToCart} />} />
+
+        <Route path="/products" element={<Products addToCart={addToCart} />} />
+
+        <Route
+          path="/products/:id"
+          element={<ProductDetail addToCart={addToCart} />}
+        />
+
+        <Route
+          path="/cart"
+          element={<Cart cart={cart} removeFromCart={removeFromCart} />}
+        />
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App
